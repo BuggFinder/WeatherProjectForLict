@@ -153,6 +153,7 @@ public class MainActivity extends AppCompatActivity {
         hourlyReportRV.setAdapter(hourlyRecordAdapter);
     }*/
 
+  
     //Check and Connect To API
     private void checkNetConnect(){
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
