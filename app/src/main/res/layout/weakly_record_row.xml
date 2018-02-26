@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:src="@drawable/dotted"
+        android:layerType="software" />
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp">
+        <TextView
+            android:id="@+id/weaklyDayNameTV"
+            android:layout_width="0dp"
+            android:layout_weight="1.6"
+            android:layout_height="wrap_content"
+            android:text="Wednesday"
+            android:textAllCaps="false"
+            android:textSize="25sp"
+            android:textColor="#d4d4d4"
+            android:paddingTop="7dp"
+            android:paddingBottom="7dp"/>
+
+        <ImageView
+            android:id="@+id/weaklyIconIV"
+            android:layout_width="0dp"
+            android:layout_height="25dp"
+            android:layout_gravity="center"
+            android:layout_weight=".5"
+            android:src="@drawable/sunandcloud" />
+
+        <TextView
+            android:id="@+id/weaklyTemperatureTV"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="90°"
+            android:textAllCaps="true"
+            android:textSize="25sp"
+            android:textColor="#d4d4d4"/>
+        <TextView
+            android:id="@+id/weaklyHumidityTV"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="90°"
+            android:textAllCaps="true"
+            android:textSize="25sp"
+            android:textColor="#9ca7ff"/>
+    </LinearLayout>
+</LinearLayout>
