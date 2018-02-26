@@ -1,14 +1,19 @@
 package com.example.sayed.weatherproject;
 
+import android.content.DialogInterface;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.text.InputType;
 import android.util.Log;
+import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -26,12 +31,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private String BASE_URL = "https://api.weatherbit.io/v2.0/forecast/";
-    private String urlString;
     private String urlStringForHourly;
     private String initialUrl= "&lat=23.8103&lon=90.4125";
     /*private String forDhakaUrl = "https://api.weatherbit.io/v2.0/forecast/hourly?&lat=23.810&lon=90.412&key=827ece656f8b49ce8caf7138e44c1af1";*/
     private String forDhakaUrl = "daily?city=dhaka,bd&key=827ece656f8b49ce8caf7138e44c1af1";
     private String forDhakaUrlhr = "hourly?city=dhaka,bd&key=827ece656f8b49ce8caf7138e44c1af1";
+    public   String city = "dhaka,bd";
+    private  String urlString;
     private WeatherServiceAPI weatherServiceAPI;
 
     //AllViews
@@ -55,21 +61,20 @@ public class MainActivity extends AppCompatActivity {
         mainTitle = (TextView) findViewById(R.id.mainTitle);
         averageTemp = (TextView) findViewById(R.id.averageTemp);
 
-        checkNetConnect();
-        getHourlyData();
-        getDailyData();
-
-
         //For hourly Adapter
         hourlyReportRV = (RecyclerView) findViewById(R.id.hourlyReportRV);
         hourlyRecords = new ArrayList<>();
-        addHourlyData();
 
 
         //For weakly Adapter>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 
         weaklyReportRV = (RecyclerView) findViewById(R.id.weaklyRecordRV);
         weaklyRecords = new ArrayList<>();
+
+        //Network Job
+        checkNetConnect();
+        getWeaklyWeatherData();
+        gerHourlyWeatherData();
     }
 
 
@@ -105,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
     }*/
 
 
-    //Hourly Data and Set Adapter
+  /*  //Hourly Data and Set Adapter
     private void addHourlyData() {
 
         hourlyRecords.add(new HourlyRecord(R.drawable.sunicon,"12 AM", "70°"));
@@ -146,7 +151,7 @@ public class MainActivity extends AppCompatActivity {
         hourlyReportRV.setLayoutManager(llm);
 
         hourlyReportRV.setAdapter(hourlyRecordAdapter);
-    }
+    }*/
 
     //Check and Connect To API
     private void checkNetConnect(){
@@ -169,9 +174,11 @@ public class MainActivity extends AppCompatActivity {
                 .build();
         weatherServiceAPI = retrofit.create(WeatherServiceAPI.class);
     }
-    private void getHourlyData(){
+    private void getWeaklyWeatherData(){
 
-        Call<ForecastWeatherResponse>weatherArrayListCall = weatherServiceAPI.getWeatherForecastResponses(forDhakaUrl);
+
+        urlString = String.format("hourly?city=%s&key=%s",city,getResources().getString(R.string.weather_api_key));
+        Call<ForecastWeatherResponse>weatherArrayListCall = weatherServiceAPI.getWeatherForecastResponses(urlString);
         weatherArrayListCall.enqueue(new Callback<ForecastWeatherResponse>() {
             @Override
             public void onResponse(Call<ForecastWeatherResponse> call, Response<ForecastWeatherResponse> response) {
@@ -189,18 +196,18 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-    public void getDailyData() {
+    public void gerHourlyWeatherData() {
 
+        urlString = String.format("hourly?city=%s&key=%s",city,getResources().getString(R.string.weather_api_key));
 
-
-        Call<ForecastWeatherResponse> responseCall = weatherServiceAPI.getWeatherHourForecastResponses(forDhakaUrlhr);
+        Call<ForecastWeatherResponse> responseCall = weatherServiceAPI.getWeatherHourForecastResponses(urlString);
         responseCall.enqueue(new Callback<ForecastWeatherResponse>() {
 
             @Override
             public void onResponse(Call<ForecastWeatherResponse> call, Response<ForecastWeatherResponse> response) {
                 ForecastWeatherResponse weatherData = response.body();
                 if(response.code() == 200){
-     //               addWeaklyData(call, response);
+                    setHourlyWeatherData(call, response);
                 }
             }
             @Override
@@ -211,12 +218,14 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+    //WeaklyData>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
     private void addWeaklyData(Call<ForecastWeatherResponse> call, Response<ForecastWeatherResponse> response) {
         ForecastWeatherResponse forecastWeatherResponse = response.body();
 
         mainTitle.setText(forecastWeatherResponse.getCityName());
         averageTemp.setText(forecastWeatherResponse.getData().get(0).getTemp().toString()+"°C");
 
+        weaklyRecords.clear();
         //WeaklyRecordSet
         weaklyRecords.add(new WeaklyRecord(0));
         weaklyRecords.add(new WeaklyRecord(1));
@@ -256,5 +265,103 @@ public class MainActivity extends AppCompatActivity {
 
         weaklyReportRV.setLayoutManager(weaklln);
         weaklyReportRV.setAdapter(weaklyRecordAdapter);
+    }
+
+
+    //Hourly Data>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+    private void setHourlyWeatherData(Call<ForecastWeatherResponse> call, Response<ForecastWeatherResponse> response) {
+        ForecastWeatherResponse forecastWeatherResponse = response.body();
+
+        hourlyRecords.clear();
+
+        //Hourly RecordSet
+        hourlyRecords.add(new HourlyRecord(0));
+        hourlyRecords.add(new HourlyRecord(1));
+        hourlyRecords.add(new HourlyRecord(2));
+        hourlyRecords.add(new HourlyRecord(3));
+        hourlyRecords.add(new HourlyRecord(4));
+        hourlyRecords.add(new HourlyRecord(5));
+        hourlyRecords.add(new HourlyRecord(6));
+        hourlyRecords.add(new HourlyRecord(7));
+        hourlyRecords.add(new HourlyRecord(8));
+        hourlyRecords.add(new HourlyRecord(9));
+        hourlyRecords.add(new HourlyRecord(10));
+        hourlyRecords.add(new HourlyRecord(11));
+        hourlyRecords.add(new HourlyRecord(12));
+        hourlyRecords.add(new HourlyRecord(13));
+        hourlyRecords.add(new HourlyRecord(14));
+        hourlyRecords.add(new HourlyRecord(15));
+        hourlyRecords.add(new HourlyRecord(16));
+        hourlyRecords.add(new HourlyRecord(17));
+        hourlyRecords.add(new HourlyRecord(18));
+        hourlyRecords.add(new HourlyRecord(19));
+        hourlyRecords.add(new HourlyRecord(20));
+        hourlyRecords.add(new HourlyRecord(21));
+        hourlyRecords.add(new HourlyRecord(22));
+        hourlyRecords.add(new HourlyRecord(23));
+
+        for (int i=0; i<24; i++){
+            hourlyRecords.get(i).setTemperature(forecastWeatherResponse.getData().get(i).getTemp().toString());
+            hourlyRecords.get(i).setWeatherImgIcon(R.drawable.sunicon);
+            Date date;
+            String datetimeFromApi = forecastWeatherResponse.getData().get(i).getDatetime();
+
+            try {
+
+                date = new SimpleDateFormat("yyyy-MM-dd:HH").parse(datetimeFromApi);
+
+                String TimeToView = new SimpleDateFormat("h:mm a").format(date);
+
+                hourlyRecords.get(i).setTime(TimeToView);
+            }catch (ParseException e) {e.printStackTrace();}
+        }
+
+        //Adapter
+        hourlyRecordAdapter = new HourlyRecordAdapter(this, hourlyRecords);
+
+        LinearLayoutManager llm= new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+        GridLayoutManager glm = new GridLayoutManager(this, 2);
+
+        StaggeredGridLayoutManager sglm = new StaggeredGridLayoutManager(2, StaggeredGridLayoutManager.VERTICAL);
+
+        hourlyReportRV.setLayoutManager(llm);
+
+        hourlyReportRV.setAdapter(hourlyRecordAdapter);
+    }
+
+
+    //Change City
+    public void changeCity(View view) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Enter your city name and country code");
+
+// Set up the input
+        final EditText input = new EditText(this);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+// Set up the buttons
+        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                city = input.getText().toString();
+
+                checkNetConnect();
+                getWeaklyWeatherData();
+                gerHourlyWeatherData();
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.cancel();
+            }
+        });
+
+        builder.show();
     }
 }

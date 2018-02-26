@@ -6,13 +6,13 @@ package com.example.sayed.weatherproject;
 
 public class WeaklyRecord {
     private int recordNumer;
-    private String humidity;
+    private String windSpeed;
     private String dayName;
     private String temperatureWk;
     private int weatherIcon;
 
-    public WeaklyRecord(String dayName, int weatherIcon, String temperatureWk, String humidity) {
-        this.humidity = humidity;
+    public WeaklyRecord(String dayName, int weatherIcon, String temperatureWk, String windSpeed) {
+        this.windSpeed = windSpeed;
         this.dayName = dayName;
         this.temperatureWk = temperatureWk;
         this.weatherIcon = weatherIcon;
@@ -23,8 +23,8 @@ public class WeaklyRecord {
         this.recordNumer = recordNumber;
     }
 
-    public void setWindSpeed(String humidity) {
-        this.humidity = humidity;
+    public void setWindSpeed(String windSpeed) {
+        this.windSpeed = windSpeed;
     }
 
     public void setDayName(String dayName) {
@@ -39,8 +39,8 @@ public class WeaklyRecord {
         this.weatherIcon = weatherIcon;
     }
 
-    public String getHumidity() {
-        return humidity;
+    public String getWindSpeed() {
+        return windSpeed;
     }
 
     public String getDayName() {

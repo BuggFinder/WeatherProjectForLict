@@ -35,7 +35,7 @@ public class WeaklyRecordAdapter extends RecyclerView.Adapter<WeaklyRecordAdapte
         holder.dayName.setText(weaklyRecords.get(position).getDayName());
         holder.iconWk.setImageResource(weaklyRecords.get(position).getWeatherIcon());
         holder.temperatureWk.setText(weaklyRecords.get(position).getTemperatureWk());
-        holder.humidity.setText(weaklyRecords.get(position).getHumidity());
+        holder.humidity.setText(weaklyRecords.get(position).getWindSpeed());
     }
 
     @Override
