@@ -22,7 +22,7 @@
             android:layout_height="wrap_content"
             android:text="Wednesday"
             android:textAllCaps="false"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textColor="#d4d4d4"
             android:paddingTop="7dp"
             android:paddingBottom="7dp"/>
@@ -30,7 +30,7 @@
         <ImageView
             android:id="@+id/weaklyIconIV"
             android:layout_width="0dp"
-            android:layout_height="25dp"
+            android:layout_height="20dp"
             android:layout_gravity="center"
             android:layout_weight=".5"
             android:src="@drawable/sunandcloud" />
@@ -43,7 +43,7 @@
             android:gravity="center"
             android:text="90°"
             android:textAllCaps="true"
-            android:textSize="25sp"
+            android:textSize="20sp"
             android:textColor="#d4d4d4"/>
         <TextView
             android:id="@+id/weaklyHumidityTV"
@@ -52,8 +52,8 @@
             android:layout_height="wrap_content"
             android:gravity="center"
             android:text="90°"
-            android:textAllCaps="true"
-            android:textSize="25sp"
+            android:textAllCaps="false"
+            android:textSize="20sp"
             android:textColor="#9ca7ff"/>
     </LinearLayout>
 </LinearLayout>
