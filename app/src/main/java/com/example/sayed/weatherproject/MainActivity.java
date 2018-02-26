@@ -1,8 +1,10 @@
 package com.example.sayed.weatherproject;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -73,8 +75,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Network Job
         checkNetConnect();
-        getWeaklyWeatherData();
-        gerHourlyWeatherData();
     }
 
 
@@ -158,11 +158,28 @@ public class MainActivity extends AppCompatActivity {
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if (networkInfo.isConnected() && networkInfo.isAvailable()){
-            connectToWeatherAPI();
-        }else {
-            //TODO: Give A Message TO user
-            Toast.makeText(this, "Ne Internet Connection", Toast.LENGTH_SHORT).show();
+        if (networkInfo !=null){
+            if (networkInfo.isConnected() && networkInfo.isAvailable()){
+                connectToWeatherAPI();
+                getWeaklyWeatherData();
+                gerHourlyWeatherData();
+            }
+        }
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Please Connect To the Internet!");
+
+
+// Set up the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS );
+                    startActivity(intent);
+                    dialog.cancel();
+                }
+            });
+            builder.show();
         }
     }
 
@@ -351,8 +368,6 @@ public class MainActivity extends AppCompatActivity {
                 city = input.getText().toString();
 
                 checkNetConnect();
-                getWeaklyWeatherData();
-                gerHourlyWeatherData();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
