@@ -5,6 +5,7 @@ package com.example.sayed.weatherproject;
  */
 
 public class HourlyRecord {
+    private int recodNumber;
     private int weatherImgIcon;
     private  String time;
     private String temperature;
@@ -15,7 +16,20 @@ public class HourlyRecord {
         this.temperature = temperature;
     }
 
-    public HourlyRecord() {
+    public HourlyRecord(int recodNumber) {
+        this.recodNumber = recodNumber;
+    }
+
+    public void setWeatherImgIcon(int weatherImgIcon) {
+        this.weatherImgIcon = weatherImgIcon;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public void setTemperature(String temperature) {
+        this.temperature = temperature;
     }
 
     public int getWeatherImgIcon() {
