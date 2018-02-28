@@ -1,8 +1,10 @@
 package com.example.sayed.weatherproject;
 
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.provider.Settings;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -31,11 +33,13 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity {
 
     private String BASE_URL = "https://api.weatherbit.io/v2.0/forecast/";
+    private String BASE_URL2 = "https://api.weatherbit.io/v2.0/forecast/";
     private String urlStringForHourly;
     private String initialUrl= "&lat=23.8103&lon=90.4125";
     /*private String forDhakaUrl = "https://api.weatherbit.io/v2.0/forecast/hourly?&lat=23.810&lon=90.412&key=827ece656f8b49ce8caf7138e44c1af1";*/
     private String forDhakaUrl = "daily?city=dhaka,bd&key=827ece656f8b49ce8caf7138e44c1af1";
     private String forDhakaUrlhr = "hourly?city=dhaka,bd&key=827ece656f8b49ce8caf7138e44c1af1";
+    private String forDhakaDailyTwo= "3hourly?city=dhaka,bd&key=827ece656f8b49ce8caf7138e44c1af1";
     public   String city = "dhaka,bd";
     private  String urlString;
     private WeatherServiceAPI weatherServiceAPI;
@@ -73,8 +77,6 @@ public class MainActivity extends AppCompatActivity {
 
         //Network Job
         checkNetConnect();
-        getWeaklyWeatherData();
-        gerHourlyWeatherData();
     }
 
 
@@ -152,17 +154,33 @@ public class MainActivity extends AppCompatActivity {
 
         hourlyReportRV.setAdapter(hourlyRecordAdapter);
     }*/
-
     //Check and Connect To API
     private void checkNetConnect(){
         ConnectivityManager connectivityManager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
 
-        if (networkInfo.isConnected() && networkInfo.isAvailable()){
-            connectToWeatherAPI();
-        }else {
-            //TODO: Give A Message TO user
-            Toast.makeText(this, "Ne Internet Connection", Toast.LENGTH_SHORT).show();
+        if (networkInfo !=null){
+            if (networkInfo.isConnected() && networkInfo.isAvailable()){
+                connectToWeatherAPI();
+                getWeaklyWeatherData();
+                gerHourlyWeatherData();
+            }
+        }
+        else {
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+            builder.setTitle("Please Connect To the Internet!");
+
+
+// Set up the buttons
+            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent(Settings.ACTION_WIFI_SETTINGS );
+                    startActivity(intent);
+                    dialog.cancel();
+                }
+            });
+            builder.show();
         }
     }
 
@@ -177,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
     private void getWeaklyWeatherData(){
 
 
-        urlString = String.format("hourly?city=%s&key=%s",city,getResources().getString(R.string.weather_api_key));
+        urlString = String.format("3hourly?city=%s&key=%s",city,getResources().getString(R.string.weather_api_key));
         Call<ForecastWeatherResponse>weatherArrayListCall = weatherServiceAPI.getWeatherForecastResponses(urlString);
         weatherArrayListCall.enqueue(new Callback<ForecastWeatherResponse>() {
             @Override
@@ -232,26 +250,26 @@ public class MainActivity extends AppCompatActivity {
         weaklyRecords.add(new WeaklyRecord(2));
         weaklyRecords.add(new WeaklyRecord(3));
         weaklyRecords.add(new WeaklyRecord(4));
-        weaklyRecords.add(new WeaklyRecord(5));
+/*        weaklyRecords.add(new WeaklyRecord(5));
         weaklyRecords.add(new WeaklyRecord(6));
-        weaklyRecords.add(new WeaklyRecord(7));
+        weaklyRecords.add(new WeaklyRecord(7));*/
 
-
-        for (int i=0; i<8; i++){
-            weaklyRecords.get(i).setTemperatureWk(forecastWeatherResponse.getData().get(i).getTemp().toString());
+        int temp = 0;
+        for (int i=0; i<32; i=i+7){
+            weaklyRecords.get(temp).setTemperatureWk(forecastWeatherResponse.getData().get(i).getTemp().toString());
   //          weaklyRecords.get(i).setWindSpeed(forecastWeatherResponse.getData().get(i).getWindSpd().toString());
-            weaklyRecords.get(i).setWeatherIcon(R.drawable.sunandcloud);
-           weaklyRecords.get(i).setWindSpeed(String.valueOf((forecastWeatherResponse.getData().get(i).getWindSpd()*(1000/60)))+"k/hr");
+            weaklyRecords.get(temp).setWeatherIcon(R.drawable.sunandcloud);
+           weaklyRecords.get(temp).setWindSpeed(String.valueOf((forecastWeatherResponse.getData().get(i).getWindSpd()*(1000/60)))+"k/hr");
 
             String dateFromAPI = forecastWeatherResponse.getData().get(i).getDatetime();
-
             try {
                 Date date = new SimpleDateFormat("yyyy-MM-dd").parse(dateFromAPI);
                 String dayName = (String) android.text.format.DateFormat.format("EEEE", date);
-                weaklyRecords.get(i).setDayName(dayName);
+                weaklyRecords.get(temp).setDayName(dayName);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
+            temp++;
         }
 
         weaklyRecords.get(0).setDayName("Today");
@@ -351,8 +369,6 @@ public class MainActivity extends AppCompatActivity {
                 city = input.getText().toString();
 
                 checkNetConnect();
-                getWeaklyWeatherData();
-                gerHourlyWeatherData();
             }
         });
         builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
